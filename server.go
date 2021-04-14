@@ -8,33 +8,32 @@ import (
 	"net"
 	"net/http"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
+func ipClean(ip string) string {
+	r, _ := regexp.Compile(`\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b`)
+	return r.FindString(ip)
+}
+
 func ipLookup(w http.ResponseWriter, r *http.Request) {
+	// response headers for browsers
 	w.Header().Set("cache-control", "public")
 	w.Header().Set("Content-Type", "application/json")
 	uri := strings.Split(r.URL.Path, "/")
 	if len(uri) < 2 {
-		fmt.Fprintf(w, "{\"Error\": \"invalid ip provided\"}\n")
+		fmt.Fprintf(w, "{\"error\": \"no ip provided (/v1/lookup/{ip})\"}\n")
 		return
 	}
 	ip := string(uri[len(uri)-1])
-	// lets clean up this ip for rce vulns
-	ip = strings.Replace(ip, "&", "", -1)
-	ip = strings.Replace(ip, "|", "", -1)
-	ip = strings.Replace(ip, ";", "", -1)
-	ip = strings.Replace(ip, " ", "", -1)
-	ip = strings.Replace(ip, "/", "", -1)
-	ip = strings.Replace(ip, "\\", "", -1)
-	ip = strings.Replace(ip, "-", "", -1)
-	// we have to read from a python since maxminddb golang api not official
-
-	// dependant upon your OS, switch the following statements
-	cmd, err := exec.Command("python3", "max.py", ip).Output()
-	//cmd, err := exec.Command("python", "max.py", ip).Output()
+	// clean user input and return ip addresses
+	ip = ipClean(ip)
+	//cmd, err := exec.Command("python3", "max.py", ip).Output()
+	cmd, err := exec.Command("python", "max.py", ip).Output()
 	if err != nil {
-		fmt.Fprintf(w, "{\"Error\": \"invalid ip provided\"}\n")
+		fmt.Fprintf(w, "{\"error\": \"invalid ip provided\"}\n")
+		fmt.Println(string(cmd))
 		fmt.Println(err)
 		return
 	}
@@ -70,5 +69,5 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("webserver started")
 	http.HandleFunc("/v1/lookup/", ipLookup)
-	http.ListenAndServe("0.0.0.0:2096", nil)
+	http.ListenAndServe("0.0.0.0:2095", nil)
 }
