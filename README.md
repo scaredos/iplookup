@@ -3,4 +3,4 @@
 
 ## Usage
 - `go run server.go`
-- Request `http://0.0.0.0:2095/v1/lookup/{IP}`
+- Request `http://0.0.0.0:2096/v1/lookup/{IP}`
