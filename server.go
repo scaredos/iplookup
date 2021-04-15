@@ -69,5 +69,5 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fmt.Println("webserver started")
 	http.HandleFunc("/v1/lookup/", ipLookup)
-	http.ListenAndServe("0.0.0.0:2095", nil)
+	_ = http.ListenAndServeTLS("0.0.0.0:443", "origin.pem", "private.pem", nil)
 }
