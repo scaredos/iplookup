@@ -18,7 +18,6 @@ func ipClean(ip string) string {
 func ipLookup(w http.ResponseWriter, r *http.Request) {
 	// response headers for browsers
 	w.Header().Set("cache-control", "public, max-age=2678400, s-max-age=2678400")
-	w.Header().Set("expires")
 	w.Header().Set("Content-Type", "application/json")
 	uri := strings.Split(r.URL.Path, "/")
 	if len(uri) < 2 {
