@@ -63,7 +63,6 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 	hosts, err := net.LookupAddr(ip)
 	if err != nil {
 		resp.Hostname = ""
-		resp.Registered = false
 		fmt.Println(err)
 	} else {
 		resp.Hostname = hosts[0]
@@ -81,8 +80,15 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		resp.Asn = asnrecord["autonomous_system_number"].(uint64)
-		resp.Org = asnrecord["autonomous_system_organization"].(string)
+		if asnrecord["autonomous_system_number"] == nil {
+			resp.Asn = 0
+			resp.Org = ""
+			resp.Registered = false
+		} else {
+			resp.Asn = asnrecord["autonomous_system_number"].(uint64)
+			resp.Org = asnrecord["autonomous_system_organization"].(string)
+			resp.Registered = true
+		}
 	}
 	re, _ := json.MarshalIndent(resp, "", "    ")
 	fmt.Fprintf(w, string(re))
