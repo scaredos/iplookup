@@ -5,5 +5,5 @@
 - ( Requires SSL Certificate ) 
 
 ## Usage
-- `go run server.go`
+- `go run httpserver.go`
 - Request `http://0.0.0.0/v1/lookup/{IP}`
