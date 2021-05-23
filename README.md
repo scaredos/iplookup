@@ -1,29 +1,30 @@
 ## IPLookup
-- My public deployment of this API: [ip.ddos.studio](https://ip.ddos.studio/v1/lookup/1.1.1.1)
+- A simple and fast IP Information API written in Go
+- There is a public deployment of this API available at [ip.ddos.studio](https://ip.ddos.studio/v1/lookup/1.1.1.1)
 
-- ( Requires GeoLite2 ASN and City database [.mmdb format] )
-- ( Requires SSL Certificate ) 
+## Prerequisites
+- **You must have GeoLite2 databases**
+- Install all dependencies
+    - Install Go
+    - `go get github.com/oschwald/maxminddb-golang`
 
-## Usage
-- `go run httpserver.go`
-- Request `http://0.0.0.0/v1/lookup/{IP}`
+## How to run
+- You can run it via the following commands:
+    - `go build httpserver.go && ./httpserver` OR
+    - `go run httpserver.go`
 
-## Documentation
-- Sample Request: `GET /v1/lookup/1.1.1.1` OR `GET /v1/ip`
-- Sample Response:
-```
-{
-    "ip": "1.1.1.1", 
-    "hostname": "one.one.one.one.", 
-    "latitude": -33.494, 
-    "longitude": 143.2104,
-    "country": "Australia",
-    "org": "CLOUDFLARENET",
-    "asn": 13335,
-    "timezone": "Australia/Sydney",
-    "country_code": "AU",
-    "registered": true
-}
-```
 
-- The `registered` flag displays `true` when the IP has a corresponding organization and hostname
+## Features
+- lookup
+   - Returns information about the provided IP address
+   - Example response available [here](https://ip.ddos.studio/v1/lookup/1.1.1.1)
+    
+-  ip
+    - Returns information about the client's IP address
+    - Same response as `lookup`
+
+
+## Dependencies
+- Go
+- GeoLite2 Databases
+- [github.com/oschwald/maxminddb-golang](https://github.com/oschwald/maxminddb-golang)
