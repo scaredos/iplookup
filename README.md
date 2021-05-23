@@ -12,6 +12,8 @@
 - You can run it via the following commands:
     - `go build httpserver.go && ./httpserver` OR
     - `go run httpserver.go`
+- Now open your browser and go to [http://localhost/v1](http://localhost/v1) 
+    - For other deployments, replace localhost with your server IP address
 
 
 ## Features
