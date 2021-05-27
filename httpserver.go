@@ -39,6 +39,7 @@ type Record struct {
 }
 
 func ipClean(ip string) string {
+	// Regex for an IPv4 or IPv6 address
 	r, _ := regexp.Compile(`\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b|\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b`)
 	return r.FindString(ip)
 }
@@ -47,11 +48,17 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 	// Response headers
 	w.Header().Set("Cache-Control", "public, max-age=2678400, s-max-age=2678400")
 	w.Header().Set("Content-Type", "application/json")
+
+	// Clean the user input to prevent any exploitation
 	ip := ipClean(r.URL.Path)
+
+	// If there is no IP in the URL Path, return error
 	if ip == "" {
 		fmt.Fprintf(w, "{\"error\": \"no ip provided (/v1/lookup/{ip})\"}\n")
 		return
 	}
+
+	// Open database and search for IP address
 	db, _ := maxminddb.Open("GeoLite2-City.mmdb")
 	var record map[string]map[string]interface{}
 	err := db.Lookup(net.ParseIP(ip), &record)
@@ -155,5 +162,5 @@ func main() {
 	http.HandleFunc("/v1/ip", ipRes)
 	http.HandleFunc("/v1/lookup/", ipLookup)
 	http.HandleFunc("/", getStarted)
-	http.ListenAndServe("0.0.0.0:80", nil)
+	http.ListenAndServe("0.0.0.0:3600", nil)
 }

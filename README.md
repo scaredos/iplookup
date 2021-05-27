@@ -12,7 +12,7 @@
 - You can run it via the following commands:
     - `go build httpserver.go && ./httpserver` OR
     - `go run httpserver.go`
-- Now open your browser and go to [http://localhost/v1](http://localhost/v1) 
+- Now open your browser and go to [http://localhost:3600/v1](http://localhost:3600/v1)
     - For other deployments, replace localhost with your server IP address
 
 
@@ -20,7 +20,7 @@
 - lookup
    - Returns information about the provided IP address
    - Example response available [here](https://ip.ddos.studio/v1/lookup/1.1.1.1)
-    
+
 -  ip
     - Returns information about the client's IP address
     - Same response as `lookup`
