@@ -1,3 +1,5 @@
+# Simple API wrapper for this iplookup
+# Copyright (c) 2021 scaredos
 import requests
 
 
