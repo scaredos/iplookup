@@ -30,3 +30,8 @@
 - Go
 - GeoLite2 Databases
 - [github.com/oschwald/maxminddb-golang](https://github.com/oschwald/maxminddb-golang)
+
+
+## FAQ
+- What is a bogon?
+    - I use the term bogon to mean an IP address that is unregistered, invalid, or out of use.
