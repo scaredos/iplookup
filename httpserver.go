@@ -9,6 +9,12 @@ import (
 	"regexp"
 )
 
+type bogon struct {
+	Ip         string `json:"ip"`
+	Bogon      bool   `json:"bogon"`
+	Registered bool   `json:"registered"`
+}
+
 type ipResponse struct {
 	Ip          string  `json:"ip"`
 	Hostname    string  `json:"hostname"`
@@ -62,8 +68,15 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 	db, _ := maxminddb.Open("GeoLite2-City.mmdb")
 	var record map[string]map[string]interface{}
 	err := db.Lookup(net.ParseIP(ip), &record)
-	if err != nil {
-		fmt.Println(err)
+	// Check if IP address in database
+	if len(record) == 0 {
+		var bogonRes bogon
+		bogonRes.Ip = ip
+		bogonRes.Bogon = true
+		bogonRes.Registered = false
+		re, _ := json.MarshalIndent(bogonRes, "", "    ")
+		fmt.Fprintf(w, string(re))
+		return
 	}
 	var resp ipResponse
 	resp.Ip = ip
@@ -84,18 +97,24 @@ func ipLookup(w http.ResponseWriter, r *http.Request) {
 	db, _ = maxminddb.Open("GeoLite2-ASN.mmdb")
 	var asnrecord map[string]interface{}
 	err = db.Lookup(net.ParseIP(ip), &asnrecord)
-	if err != nil {
-		fmt.Println(err)
+	// Check if IP address in database
+	if len(asnrecord) == 0 {
+		var bogonRes bogon
+		bogonRes.Ip = ip
+		bogonRes.Bogon = true
+		bogonRes.Registered = false
+		re, _ := json.MarshalIndent(bogonRes, "", "    ")
+		fmt.Fprintf(w, string(re))
+		return
+	}
+	if asnrecord["autonomous_system_number"] == nil {
+		resp.Asn = 0
+		resp.Org = ""
+		resp.Registered = false
 	} else {
-		if asnrecord["autonomous_system_number"] == nil {
-			resp.Asn = 0
-			resp.Org = ""
-			resp.Registered = false
-		} else {
-			resp.Asn = asnrecord["autonomous_system_number"].(uint64)
-			resp.Org = asnrecord["autonomous_system_organization"].(string)
-			resp.Registered = true
-		}
+		resp.Asn = asnrecord["autonomous_system_number"].(uint64)
+		resp.Org = asnrecord["autonomous_system_organization"].(string)
+		resp.Registered = true
 	}
 	re, _ := json.MarshalIndent(resp, "", "    ")
 	fmt.Fprintf(w, string(re))
