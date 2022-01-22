@@ -1,6 +1,6 @@
 ## IPLookup
 - A simple and fast IP Information API written in Go
-- There is a public deployment of this API available at [ip.ddos.studio](https://ip.ddos.studio/v1/lookup/1.1.1.1)
+- There is a public deployment of this API available at [ip.ddos.studio](https://ip.ddos.studio/v1/lookup/1.1.1.1) (Unavailable)
 
 ## Prerequisites
 - **You must have GeoLite2 databases**
